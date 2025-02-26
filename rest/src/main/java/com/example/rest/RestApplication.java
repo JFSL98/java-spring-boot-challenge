@@ -1,13 +1,11 @@
-package com.example.javaspringchallenge;
+package com.example.rest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JavaSpringChallengeApplication {
-
+public class RestApplication {
     public static void main(String[] args) {
-        SpringApplication.run(JavaSpringChallengeApplication.class, args);
+        SpringApplication.run(RestApplication.class, args);
     }
-
 }
