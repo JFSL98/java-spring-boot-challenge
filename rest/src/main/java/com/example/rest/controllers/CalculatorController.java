@@ -1,5 +1,6 @@
 package com.example.rest.controllers;
 
+import com.example.rest.dtos.CalculationResultDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,27 +13,28 @@ import java.math.RoundingMode;
 @RequestMapping("/")
 public class CalculatorController {
     @GetMapping("/sum")
-    public BigDecimal sum(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
-        return a.add(b);
+    public CalculationResultDTO sum(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+        return new CalculationResultDTO(a.add(b));
     }
 
     @GetMapping("/subtract")
-    public BigDecimal subtract(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
-        return a.subtract(b);
+    public CalculationResultDTO subtract(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+        return new CalculationResultDTO(a.subtract(b));
     }
 
     @GetMapping("/multiply")
-    public BigDecimal multiply(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
-        return a.multiply(b);
+    public CalculationResultDTO multiply(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+        return new CalculationResultDTO(a.multiply(b));
     }
 
     @GetMapping("/divide")
-    public BigDecimal divide(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+    public CalculationResultDTO divide(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+        CalculationResultDTO result = new CalculationResultDTO(null);
         try {
-            return a.divide(b, 10, RoundingMode.HALF_UP).stripTrailingZeros();
+            result.setResult(a.divide(b, 10, RoundingMode.HALF_UP).stripTrailingZeros());
+        } catch (ArithmeticException e) {
+            result.setResult(null);
         }
-        catch (ArithmeticException e) {
-            return null;
-        }
+        return result;
     }
 }
