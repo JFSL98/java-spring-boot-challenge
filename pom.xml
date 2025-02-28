@@ -23,6 +23,7 @@
     </developers>
     <modules>
         <module>rest</module>
+        <module>calculator</module>
     </modules>
     <scm>
         <connection/>

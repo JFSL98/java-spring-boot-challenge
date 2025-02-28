@@ -38,6 +38,24 @@ public class KafkaConfig {
     }
 
     @Bean
+    public ConsumerFactory<String, CalculationResponseDTO> consumerFactory() {
+        Map<String, Object> consumerProps = new HashMap<>();
+        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "group");
+        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), new JsonDeserializer<>(CalculationResponseDTO.class));
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, CalculationResponseDTO> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, CalculationResponseDTO> factory
+                = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
+    }
+
+    @Bean
     public NewTopic calculationRequestsTopic() {
         return TopicBuilder.name("calculation-requests")
                 .partitions(10)
