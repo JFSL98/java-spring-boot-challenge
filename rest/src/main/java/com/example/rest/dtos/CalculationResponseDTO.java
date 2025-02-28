@@ -1,10 +1,15 @@
 package com.example.rest.dtos;
 
+import org.springframework.boot.jackson.JsonComponent;
+
 import java.math.BigDecimal;
 
+@JsonComponent
 public class CalculationResponseDTO {
-    private final String correlationId;
-    private final BigDecimal result;
+    private String correlationId;
+    private BigDecimal result;
+
+    public CalculationResponseDTO() {}
 
     public CalculationResponseDTO(String correlationId, BigDecimal result) {
         this.correlationId = correlationId;
@@ -17,5 +22,13 @@ public class CalculationResponseDTO {
 
     public BigDecimal getResult() {
         return result;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
+    public void setResult(BigDecimal result) {
+        this.result = result;
     }
 }
