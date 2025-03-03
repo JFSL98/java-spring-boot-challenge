@@ -1,7 +1,7 @@
 package com.example.rest.controllers;
 
 import com.example.rest.dtos.CalculationRequestDTO;
-import com.example.rest.dtos.CalculationResultDTO;
+import com.example.rest.dtos.CalculationResponseDTO;
 import com.example.rest.middleware.kafka.CalculatorProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,40 +10,59 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/")
 public class CalculatorController {
+
+    private final CalculatorProducer calculatorProducer;
+
     @Autowired
-    private CalculatorProducer calculatorProducer;
+    public CalculatorController(CalculatorProducer calculatorProducer) {
+        this.calculatorProducer = calculatorProducer;
+    }
 
     @GetMapping("/sum")
-    public CalculationResultDTO sum(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
-        CalculationRequestDTO calculationRequestDTO = new CalculationRequestDTO(UUID.randomUUID().toString(), "sum", a, b);
-        calculatorProducer.sendCalculationRequest(calculationRequestDTO.getCorrelationId(), calculationRequestDTO);
-        return new CalculationResultDTO(a.add(b));
+    public CalculationResponseDTO sum(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+        CalculationRequestDTO calculationRequestDTO = new CalculationRequestDTO("sum", a, b);
+        try {
+            return calculatorProducer.handleCalculationRequest(calculationRequestDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @GetMapping("/subtract")
-    public CalculationResultDTO subtract(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
-        return new CalculationResultDTO(a.subtract(b));
+    public CalculationResponseDTO subtract(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+        CalculationRequestDTO calculationRequestDTO = new CalculationRequestDTO("subtract", a, b);
+        try {
+            return calculatorProducer.handleCalculationRequest(calculationRequestDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @GetMapping("/multiply")
-    public CalculationResultDTO multiply(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
-        return new CalculationResultDTO(a.multiply(b));
+    public CalculationResponseDTO multiply(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+        CalculationRequestDTO calculationRequestDTO = new CalculationRequestDTO("multiply", a, b);
+        try {
+            return calculatorProducer.handleCalculationRequest(calculationRequestDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @GetMapping("/divide")
-    public CalculationResultDTO divide(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
-        BigDecimal result;
+    public CalculationResponseDTO divide(@RequestParam BigDecimal a, @RequestParam BigDecimal b) {
+        CalculationRequestDTO calculationRequestDTO = new CalculationRequestDTO("divide", a, b);
         try {
-            result = a.divide(b, 10, RoundingMode.HALF_UP).stripTrailingZeros();
-        } catch (ArithmeticException e) {
-            result = null;
+            return calculatorProducer.handleCalculationRequest(calculationRequestDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return new CalculationResultDTO(result);
     }
 }

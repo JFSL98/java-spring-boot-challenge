@@ -26,7 +26,7 @@ public class KafkaConfig {
         Map<String, Object> consumerProps = new HashMap<>();
 
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "group");
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "calculatorServiceGroup");
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         consumerProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.example.calculator.dtos");
@@ -56,7 +56,12 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, CalculationResponseDTO> kafkaTemplate() {
+    public KafkaTemplate<String, CalculationResponseDTO> kafkaTemplate(
+            ProducerFactory<String, CalculationResponseDTO> producerFactory,
+            ConcurrentKafkaListenerContainerFactory<String, CalculationRequestDTO> kafkaListenerContainerFactory) {
+
+        KafkaTemplate<String, CalculationResponseDTO> kafkaTemplate = new KafkaTemplate<>(producerFactory);
+        kafkaListenerContainerFactory.setReplyTemplate(kafkaTemplate);
         return new KafkaTemplate<>(producerFactory());
     }
 }

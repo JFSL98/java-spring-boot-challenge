@@ -12,8 +12,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,13 +40,35 @@ public class KafkaConfig {
     }
 
     @Bean
+    public ReplyingKafkaTemplate<String, CalculationRequestDTO, CalculationResponseDTO> replyingKafkaTemplate(
+            ProducerFactory<String, CalculationRequestDTO> pf,
+            ConcurrentMessageListenerContainer<String, CalculationResponseDTO> repliesContainer) {
+        return new ReplyingKafkaTemplate<>(pf, repliesContainer);
+    }
+
+    @Bean
+    public ConcurrentMessageListenerContainer<String, CalculationResponseDTO> repliesContainer(
+            ConcurrentKafkaListenerContainerFactory<String, CalculationResponseDTO> containerFactory) {
+
+        ConcurrentMessageListenerContainer<String, CalculationResponseDTO> repliesContainer =
+                containerFactory.createContainer("calculation-replies");
+        repliesContainer.getContainerProperties().setGroupId("restServiceGroup");
+        repliesContainer.setAutoStartup(false);
+        return repliesContainer;
+    }
+
+    @Bean
     public ConsumerFactory<String, CalculationResponseDTO> consumerFactory() {
         Map<String, Object> consumerProps = new HashMap<>();
         consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "group");
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "restServiceGroup");
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), new JsonDeserializer<>(CalculationResponseDTO.class));
+        consumerProps.put(JsonDeserializer.TRUSTED_PACKAGES, "com.example.rest.dtos");
+
+        JsonDeserializer<CalculationResponseDTO> deserializer = new JsonDeserializer<>(CalculationResponseDTO.class);
+
+        return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 
     @Bean
@@ -58,7 +82,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic calculationRequestsTopic() {
         return TopicBuilder.name("calculation-requests")
-                .partitions(10)
+                .partitions(1)
                 .replicas(1)
                 .build();
     }
@@ -66,7 +90,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic calculationResultsTopic() {
         return TopicBuilder.name("calculation-results")
-                .partitions(10)
+                .partitions(1)
                 .replicas(1)
                 .build();
     }
