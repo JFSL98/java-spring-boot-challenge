@@ -20,12 +20,16 @@ public class CalculatorConsumer {
         this.calculatorService = calculatorService;
     }
 
-    @KafkaListener(id="calc", topics = "calculation-requests")
+    @KafkaListener(id = "calc", topics = "calculation-requests")
     @SendTo
     public CalculationResponseDTO listen(ConsumerRecord<String, CalculationRequestDTO> record) {
-        System.out.println("Received Message: " + record.value().getOperator() + ", " + record.value().getA() + ", " + record.value().getB());
-        CalculationRequestDTO request = record.value();
-        BigDecimal result = calculatorService.calculate(request.getOperator(), request.getA(), request.getB());
-        return new CalculationResponseDTO(result);
+        try {
+            System.out.println("Received Message: " + record.value().getOperator() + ", " + record.value().getA() + ", " + record.value().getB());
+            CalculationRequestDTO request = record.value();
+            BigDecimal result = calculatorService.calculate(request.getOperator(), request.getA(), request.getB());
+            return new CalculationResponseDTO(result);
+        } catch (Exception e) {
+            return new CalculationResponseDTO(e.getMessage());
+        }
     }
 }

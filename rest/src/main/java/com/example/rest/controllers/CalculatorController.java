@@ -29,7 +29,7 @@ public class CalculatorController {
             return calculatorProducer.handleCalculationRequest(calculationRequestDTO);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new CalculationResponseDTO("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -40,7 +40,7 @@ public class CalculatorController {
             return calculatorProducer.handleCalculationRequest(calculationRequestDTO);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new CalculationResponseDTO("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -51,7 +51,7 @@ public class CalculatorController {
             return calculatorProducer.handleCalculationRequest(calculationRequestDTO);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new CalculationResponseDTO("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -62,7 +62,7 @@ public class CalculatorController {
             return calculatorProducer.handleCalculationRequest(calculationRequestDTO);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new CalculationResponseDTO("Unexpected error: " + e.getMessage());
         }
     }
 }
