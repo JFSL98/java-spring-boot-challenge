@@ -41,10 +41,10 @@
 
 ### GET /sum
 
-| Parameter | Type   | Description          |
-|-----------|--------|----------------------|
-| a         | number | First number to sum  |
-| b         | number | Second number to sum |
+| Parameter | Type   | Description   |
+|-----------|--------|---------------|
+| a         | number | First addend  |
+| b         | number | Second addend |
 
 ### GET /subtract
 
@@ -55,10 +55,10 @@
 
 ### GET /multiply
 
-| Parameter | Type   | Description               |
-|-----------|--------|---------------------------|
-| a         | number | First number to multiply  |
-| b         | number | Second number to multiply |
+| Parameter | Type   | Description   |
+|-----------|--------|---------------|
+| a         | number | First factor  |
+| b         | number | Second factor |
 
 ### GET /divide
 
