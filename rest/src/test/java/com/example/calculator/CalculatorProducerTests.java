@@ -10,11 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.MDC;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.SendResult;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -41,10 +44,12 @@ public class CalculatorProducerTests {
     @Test
     void testHandleCalculationRequest() throws ExecutionException, InterruptedException, TimeoutException {
         // Prepare Data
+        MDC.put("X-Request-Id", UUID.randomUUID().toString());
         CalculationRequestDTO requestDTO = new CalculationRequestDTO("sum", new BigDecimal(1), new BigDecimal(2));
         CalculationResponseDTO responseDTO = new CalculationResponseDTO(new BigDecimal(3));
 
         ProducerRecord<String, CalculationRequestDTO> record = new ProducerRecord<>("calculation-requests", requestDTO);
+        record.headers().add("X-Request-Id", MDC.get("X-Request-Id").getBytes(StandardCharsets.UTF_8));
 
         // Mock
         RequestReplyFuture<String, CalculationRequestDTO, CalculationResponseDTO> future = mock(RequestReplyFuture.class);
