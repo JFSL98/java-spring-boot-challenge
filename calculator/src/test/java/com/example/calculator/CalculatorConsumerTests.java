@@ -32,6 +32,7 @@ public class CalculatorConsumerTests {
 
     @Test
     public void testListen() {
+        // Prepare data
         CalculationRequestDTO requestDTO = new CalculationRequestDTO("sum", new BigDecimal(1), new BigDecimal(2));
         ConsumerRecord<String, CalculationRequestDTO> record =
                 new ConsumerRecord<>(
@@ -41,11 +42,14 @@ public class CalculatorConsumerTests {
                         "key123",
                         requestDTO);
 
+        // Mock
         when(calculatorService.calculate("sum", new BigDecimal(1), new BigDecimal(2)))
                 .thenReturn(new BigDecimal(3));
 
+        // Act
         CalculationResponseDTO responseDTO = calculatorConsumer.listen(record);
 
+        // Assert
         assertNotNull(responseDTO);
         assertEquals(new BigDecimal(3), responseDTO.getResult());
     }
