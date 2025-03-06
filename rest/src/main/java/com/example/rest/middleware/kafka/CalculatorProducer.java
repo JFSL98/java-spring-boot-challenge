@@ -13,6 +13,7 @@ import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -31,6 +32,7 @@ public class CalculatorProducer {
 
     public CalculationResponseDTO handleCalculationRequest(CalculationRequestDTO request) throws ExecutionException, InterruptedException, TimeoutException {
         ProducerRecord<String, CalculationRequestDTO> record = new ProducerRecord<>("calculation-requests", request);
+        record.headers().add("X-Request-Id", MDC.get("X-Request-Id").getBytes(StandardCharsets.UTF_8));
         log.info("X-Request-Id {} | Sending request to kafka topic: {}", MDC.get("X-Request-Id"), record.topic());
         log.debug("X-Request-Id {} | With data: {}", MDC.get("X-Request-Id"), record.value());
         RequestReplyFuture<String, CalculationRequestDTO, CalculationResponseDTO> replyFuture = replyingKafkaTemplate.sendAndReceive(record);
