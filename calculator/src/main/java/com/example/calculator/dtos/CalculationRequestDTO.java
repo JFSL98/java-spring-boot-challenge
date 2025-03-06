@@ -29,4 +29,13 @@ public class CalculationRequestDTO {
     public String getOperator() {
         return operator;
     }
+
+    @Override
+    public String toString() {
+        return "CalculationRequestDTO{" +
+                "operator='" + operator + '\'' +
+                ", a=" + a +
+                ", b=" + b +
+                '}';
+    }
 }

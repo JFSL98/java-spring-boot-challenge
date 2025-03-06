@@ -37,4 +37,12 @@ public class CalculationResponseDTO {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
+    @Override
+    public String toString() {
+        return "CalculationResponseDTO{" +
+                "result=" + result +
+                ", errorMessage='" + errorMessage + '\'' +
+                '}';
+    }
 }

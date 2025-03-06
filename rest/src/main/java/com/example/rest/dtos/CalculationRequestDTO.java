@@ -9,7 +9,8 @@ public class CalculationRequestDTO {
     private String operator;
     private BigDecimal a, b;
 
-    public CalculationRequestDTO() {}
+    public CalculationRequestDTO() {
+    }
 
     public CalculationRequestDTO(String operator, BigDecimal a, BigDecimal b) {
         this.operator = operator;
@@ -39,5 +40,14 @@ public class CalculationRequestDTO {
 
     public void setB(BigDecimal b) {
         this.b = b;
+    }
+
+    @Override
+    public String toString() {
+        return "CalculationRequestDTO{" +
+                "operator='" + operator + '\'' +
+                ", a=" + a +
+                ", b=" + b +
+                '}';
     }
 }
