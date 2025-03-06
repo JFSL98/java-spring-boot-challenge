@@ -6,6 +6,7 @@ import com.example.calculator.services.CalculatorService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -16,7 +17,7 @@ import java.math.BigDecimal;
 @Component
 public class CalculatorConsumer {
 
-    private static final Logger logger = LoggerFactory.getLogger(CalculatorConsumer.class);
+    private static final Logger log = LoggerFactory.getLogger(CalculatorConsumer.class);
 
     private final CalculatorService calculatorService;
 
@@ -29,13 +30,13 @@ public class CalculatorConsumer {
     @SendTo
     public CalculationResponseDTO listen(ConsumerRecord<String, CalculationRequestDTO> record) {
         try {
-            logger.info("Received request: {}", record.value());
+            log.info("X-Request-Id {} | Received request: {}", MDC.get("X-Request-Id"), record.value());
             CalculationRequestDTO request = record.value();
             BigDecimal result = calculatorService.calculate(request.getOperator(), request.getA(), request.getB());
-            logger.info("Replying with result: {}", result);
+            log.info("X-Request-Id {} | Replying with result: {}", MDC.get("X-Request-Id"), result);
             return new CalculationResponseDTO(result);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error("X-Request-Id " + MDC.get("X-Request-Id") + " | " + e.getMessage(), e);
             return new CalculationResponseDTO(e.getMessage());
         }
     }
